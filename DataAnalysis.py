@@ -20,7 +20,7 @@ df['hypothesis_length'] = df['hypothesis'].apply(len)
 
 #attempting dataset cartography
 # Load the output file
-output_file_path = "./eval_output/eval_predictions.jsonl"
+output_file_path = "./eval_output/incorrect_eval_predictions.jsonl"
 
 # Initialize a list to store the parsed examples
 examples = []
@@ -53,22 +53,29 @@ def compute_variability(confidences):
     return np.std(confidences)
 
 # For the example, if you have multiple confidence values from different epochs:
-for example in examples:
+#for example in examples:
     # If you tracked multiple confidences over epochs:
     # example['variability'] = compute_variability(example['epoch_confidences'])
     # For now, using single confidence from a single evaluation phase:
-    example['variability'] = 0.0  # If you only have single confidence values
+#    example['variability'] = 0.0  # If you only have single confidence values
 
 # Check the updated examples with variability
 #print(examples[:2])
 
 # Extract mean confidence and variability values
 mean_confidences = [example['confidence'] for example in examples]
-variabilities = [example['variability'] for example in examples]
+#variabilities = [example['variability'] for example in examples]
 
 # Create the scatter plot
-plt.scatter(mean_confidences, variabilities, alpha=0.7)
-plt.xlabel("Mean Confidence")
-plt.ylabel("Variability")
-plt.title("Dataset Cartography")
-plt.show()
+#plt.scatter(mean_confidences, variabilities, alpha=0.7)
+#plt.xlabel("Mean Confidence")
+#plt.ylabel("Variability")
+#plt.title("Dataset Cartography")
+#plt.show()
+
+# Save the updated examples to a new file with confidence values
+output_with_confidence_file_path = "./eval_output/eval_predictions_with_confidence.jsonl"
+
+with open(output_with_confidence_file_path, 'w', encoding='utf-8') as f:
+    for example in examples:
+        f.write(json.dumps(example) + '\n')
