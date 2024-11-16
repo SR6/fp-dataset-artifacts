@@ -1,4 +1,5 @@
 import datasets
+from sklearn.metrics import f1_score
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, \
     AutoModelForQuestionAnswering, Trainer, TrainingArguments, HfArgumentParser
 import evaluate
@@ -184,6 +185,12 @@ def main():
         # method (see https://huggingface.co/transformers/_modules/transformers/trainer.html#Trainer.prediction_step).
         # If you do this your custom prediction_step should probably start by calling super().prediction_step and modifying the
         # values that it returns.
+        true_labels = [example['label'] for example in eval_dataset]
+        predicted_labels = [int(pred.argmax()) for pred in eval_predictions.predictions]
+        f1 = f1_score(true_labels, predicted_labels, average='weighted')
+        results['f1_score'] = f1
+
+        print(f"F1 Score: {f1}")
 
         print('Evaluation results:')
         print(results)
@@ -193,7 +200,7 @@ def main():
         with open(os.path.join(training_args.output_dir, 'eval_metrics.json'), encoding='utf-8', mode='w') as f:
             json.dump(results, f)
 
-        with open(os.path.join(training_args.output_dir, 'eval_predictions.jsonl'), encoding='utf-8', mode='w') as f:
+        with open(os.path.join(training_args.output_dir, 'incorrect_eval_predictions.jsonl'), encoding='utf-8', mode='w') as f:
             if args.task == 'qa':
                 predictions_by_id = {pred['id']: pred['prediction_text'] for pred in eval_predictions.predictions}
                 for example in eval_dataset:
@@ -203,11 +210,16 @@ def main():
                     f.write('\n')
             else:
                 for i, example in enumerate(eval_dataset):
-                    example_with_prediction = dict(example)
-                    example_with_prediction['predicted_scores'] = eval_predictions.predictions[i].tolist()
-                    example_with_prediction['predicted_label'] = int(eval_predictions.predictions[i].argmax())
-                    f.write(json.dumps(example_with_prediction))
-                    f.write('\n')
+                    predicted_label = int(eval_predictions.predictions[i].argmax())
+                    true_label = example['label']  # Assumes `label` is present in `example`
+
+                    if predicted_label != true_label:
+                    # Include only incorrect predictions
+                        example_with_prediction = dict(example)
+                        example_with_prediction['predicted_scores'] = eval_predictions.predictions[i].tolist()
+                        example_with_prediction['predicted_label'] = int(eval_predictions.predictions[i].argmax())
+                        f.write(json.dumps(example_with_prediction))
+                        f.write('\n')
 
 
 if __name__ == "__main__":
