@@ -15,8 +15,8 @@ df['premise_length'] = df['premise'].apply(len)
 df['hypothesis_length'] = df['hypothesis'].apply(len)
 
 # Visualize length distributions
-#df[['premise_length', 'hypothesis_length']].hist(bins=30)
-#plt.show()
+df[['premise_length', 'hypothesis_length']].hist(bins=30)
+plt.show()
 
 #attempting dataset cartography
 # Load the output file
