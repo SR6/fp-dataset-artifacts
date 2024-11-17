@@ -51,6 +51,10 @@ def main():
 
     training_args, args = argp.parse_args_into_dataclasses()
 
+    #Make sure to comment these lines out when not doing a contrast dataset training fine tune!!
+    #training_args.learning_rate = 1e-6 #make this small so the contrast set doesn't make major changes in weights.
+    #training_args.lr_scheduler_type ="constant"
+
     # Dataset selection
     # IMPORTANT: this code path allows you to load custom datasets different from the standard SQuAD or SNLI ones.
     # You need to format the dataset appropriately. For SNLI, you can prepare a file with each line containing one
