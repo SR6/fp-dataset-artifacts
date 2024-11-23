@@ -10,6 +10,12 @@ df = pd.read_json("./eval_output/incorrect_eval_predictions.jsonl", lines=True)
 print(df['label'].value_counts())
 print(df['predicted_label'].value_counts())
 
+df_a = pd.read_json("./contrast_data.jsonl", lines=True)
+
+# Example: Analyze label distribution
+print('contrast set breakdown of classes')
+print(df_a['label'].value_counts())
+
 # Example: Analyze length of premises and hypotheses
 df['premise_length'] = df['premise'].apply(len)
 df['hypothesis_length'] = df['hypothesis'].apply(len)
@@ -18,7 +24,7 @@ df['hypothesis_length'] = df['hypothesis'].apply(len)
 df[['premise_length', 'hypothesis_length']].hist(bins=30)
 plt.xlabel('Number of Tokens distribution')
 plt.ylabel('Length of text')
-plt.show()
+#plt.show()
 
 #attempting dataset cartography
 # Load the output file
@@ -81,3 +87,43 @@ output_with_confidence_file_path = "./eval_output/eval_predictions_with_confiden
 with open(output_with_confidence_file_path, 'w', encoding='utf-8') as f:
     for example in examples:
         f.write(json.dumps(example) + '\n')
+
+import json
+import matplotlib.pyplot as plt
+import numpy as np
+from collections import defaultdict
+
+# Load the mispredictions file
+file_path = output_with_confidence_file_path  # Replace with your file path
+data = []
+
+# Read the data from the file
+with open(file_path, "r") as f:
+    for line in f:
+        data.append(json.loads(line))
+
+# Organize confidence scores by gold label
+confidence_by_label = defaultdict(list)
+
+# Map gold labels to their string representations for readability
+label_map = {0: "entailment", 1: "neutral", 2: "contradiction"}
+
+for entry in data:
+    gold_label = entry["label"]
+    confidence = entry["confidence"]
+    confidence_by_label[label_map[gold_label]].append(confidence)
+
+# Plot histograms
+plt.figure(figsize=(12, 8))
+
+for i, (label, confidences) in enumerate(confidence_by_label.items(), 1):
+    plt.subplot(1, 3, i)  # Create subplots for each label
+    plt.hist(confidences, bins=np.linspace(0, 1, 20), alpha=0.7, color='blue', edgecolor='black')
+    plt.title(f"Confidence Scores: {label.capitalize()}")
+    plt.xlabel("Confidence")
+    plt.ylabel("Frequency")
+    plt.grid(True)
+
+# Adjust layout and display
+plt.tight_layout()
+plt.show()
