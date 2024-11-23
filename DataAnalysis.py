@@ -16,6 +16,8 @@ df['hypothesis_length'] = df['hypothesis'].apply(len)
 
 # Visualize length distributions
 df[['premise_length', 'hypothesis_length']].hist(bins=30)
+plt.xlabel('Number of Tokens distribution')
+plt.ylabel('Length of text')
 plt.show()
 
 #attempting dataset cartography
