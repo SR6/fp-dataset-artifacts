@@ -67,3 +67,36 @@ plt.grid(True)
 plt.xlim(0,30)
 # Show the plot
 plt.show()
+
+
+import matplotlib.pyplot as plt
+
+# Load the SNLI dataset if not already loaded
+# snli = load_dataset("snli", split="train")  # Uncomment if you need to load it
+
+def compute_lengths_from_dataset(dataset):
+    premise_lengths = dataset["premise"]
+    hypothesis_lengths = dataset["hypothesis"]
+
+    # Tokenize and compute lengths
+    premise_lengths = [len(p.split()) for p in premise_lengths]
+    hypothesis_lengths = [len(h.split()) for h in hypothesis_lengths]
+
+    return premise_lengths, hypothesis_lengths
+
+def plot_length_distribution(lengths, title, color):
+    plt.figure(figsize=(10, 6))
+    plt.hist(lengths, bins=range(0, max(lengths) + 5, 5), color=color, alpha=0.7, edgecolor='black')
+    plt.title(title)
+    plt.xlabel('Sentence Length (Number of Tokens)')
+    plt.ylabel('Frequency')
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()
+
+# Compute lengths
+premise_lengths, hypothesis_lengths = compute_lengths_from_dataset(train_dataset)
+
+# Plot the distributions
+plot_length_distribution(premise_lengths, "Premise Sentence Length Distribution", "blue")
+plot_length_distribution(hypothesis_lengths, "Hypothesis Sentence Length Distribution", "green")
+

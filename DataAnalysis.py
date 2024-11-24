@@ -17,14 +17,19 @@ print('contrast set breakdown of classes')
 print(df_a['label'].value_counts())
 
 # Example: Analyze length of premises and hypotheses
-df['premise_length'] = df['premise'].apply(len)
-df['hypothesis_length'] = df['hypothesis'].apply(len)
+# Correctly calculate the number of tokens
+df['premise_length'] = df['premise'].apply(lambda x: len(x.split()))
+df['hypothesis_length'] = df['hypothesis'].apply(lambda x: len(x.split()))
 
 # Visualize length distributions
-df[['premise_length', 'hypothesis_length']].hist(bins=30)
-plt.xlabel('Number of Tokens distribution')
-plt.ylabel('Length of text')
-#plt.show()
+df[['premise_length', 'hypothesis_length']].hist(bins=30, alpha=0.7, figsize=(10, 6))
+plt.xlabel('Number of Tokens')
+plt.ylabel('Frequency')
+plt.title('Sentence Length Distributions for Premises and Hypotheses')
+plt.legend(['Premise Length', 'Hypothesis Length'])
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.show()
+
 
 #attempting dataset cartography
 # Load the output file
