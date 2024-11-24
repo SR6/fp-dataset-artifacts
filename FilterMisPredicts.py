@@ -4,6 +4,7 @@ import json
 input_file = "./eval_output/eval_predictions_with_confidence.jsonl"  # Replace with your file path
 output_file = "./eval_output/filtered_mispredictions.jsonl"
 output_file_2 = "./eval_output/filtered_mispredictions_2.jsonl"
+output_file_3 = "./eval_output/filtered_entailAsContra.jsonl"
 
 # Define the confidence range for filtering (e.g., intermediate confidence)
 confidence_min = 0.2
@@ -25,6 +26,12 @@ with open(input_file, "r") as infile, open(output_file_2, "w") as outfile:
     for line in infile:
         example = json.loads(line)
         if (example['label'] == 2):
+            outfile.write(json.dumps(example) + "\n")
+
+with open(input_file, "r") as infile, open(output_file_3,"w") as outfile:
+    for line in infile:
+        example = json.loads(line)
+        if (example['label'] == 0 and example['predicted_label'] == 2):
             outfile.write(json.dumps(example) + "\n")
 
 print(f"Filtered examples written to {output_file}")
